@@ -2,7 +2,7 @@ import items
 
 class Player:
 	def __init__(self):
-		self.inventory = [None]
+		self.inventory = []
 						
 		self.weapon = None
 		
@@ -11,8 +11,8 @@ class Player:
 		self.hp = 30
 		self.max_hp = 50
 		
-		self.x = 2
-		self.y = 3
+		self.x = 1
+		self.y = 1
 
 	def print_inventory(self):
 		print("Inventory:")

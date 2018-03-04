@@ -91,15 +91,14 @@ class Weapon(Item):
 		
 
 
-class Phone(Weapon):
-	name = "rock"
+class Phone(Item):
+	name = "phone"
 	
 	description = "A cellphone that records the events of the future, one of its more useful features is that it tells you when you're near death"
 	dropped_description = "Your cellphone lies on the ground. It's pretty important, you should pick it back up."
 	equip_description = "You pick up your cellphone."
 	attack_descriptions = ["It's not reccomeneded you use this to attack."]
 	
-	damage = None 
 
 
 class Darts(Weapon):
@@ -110,7 +109,7 @@ class Darts(Weapon):
 	equip_description = "You grab the darts."
 	attack_descriptions = ["You throw the darts."]
 	
-	damage = None
+	damage = 5
 	
 	
 class Gold(Item):

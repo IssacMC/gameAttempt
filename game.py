@@ -25,6 +25,7 @@ player = Player()
 world = World()
 	
 def play():	
+	global turnCount
 	print_welcome_text()
 	
 	print_wrap(world.tile_at(player.x,player.y).intro_text())
@@ -69,6 +70,8 @@ def play():
 		
 def handle_input(verb, noun1, noun2):
 	global debug_mode
+	global turnCount
+	
 	if(verb == 'help'):
 		if(not noun1):
 			return help_text
@@ -100,7 +103,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_north(player.x, player.y)
 				if(move_status):
 					player.move_north()
-					count = count+1
+					turnCount = turnCount + 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:
@@ -110,7 +113,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_south(player.x, player.y)
 				if(move_status):
 					player.move_south()
-					count = count+1
+					turnCount = turnCount + 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:
@@ -120,7 +123,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_east(player.x, player.y)
 				if(move_status):
 					player.move_east()
-					count = count+1
+					turnCount = turnCount+1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:
@@ -130,7 +133,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_west(player.x, player.y)
 				if(move_status):
 					player.move_west()
-					count = count+1
+					turnCount = turnCount + 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:

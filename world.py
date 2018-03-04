@@ -5,6 +5,8 @@ import npcs
 
 from random import randint 	# Used to generate random integers.
 
+Two = enemies.Two()			# I'm attempting a global enemy, may God help us all.
+
 class MapTile:
 	description = "Do not create raw MapTiles! Create a subclass instead!"
 	barriers = []
@@ -127,16 +129,20 @@ class MapTile:
 
 
 class Home(MapTile):
-	items = [items.Phone()]
+	items = [items.Phone(), items.Darts()]
 	description = "A phone lies on the floor, as well as some darts."
 		
-class Two(MapTile):
+class ZoneTwo(MapTile):
 	description = "A girl seems to be standing there waiting for something"
 
 class School(MapTile):
+	global Two
+	enemies = [Two]
 	description = "You're at school. Kinda boring honestly."
 	
 class Tower(MapTile):
+	global Two
+	enemies = [Two]
 	description = "A high tower looms in your vision, would you like to enter?"
 
 class Police(MapTile):
@@ -168,17 +174,19 @@ class InRefuge(MapTile):
 
 		
 class World:									# I choose to define the world as a class. This makes it more straightforward to import into the game.
-	map = []
-
+	map = [
+		[ZoneTwo(), School(), Tower()],
+		[Police(), Home(), Vault()],
+		[Park(), Refuge(), Shrine()]
+	]
+	
 	def __init__(self):
 		for i in range(len(self.map)):			# We want to set the x, y coordinates for each tile so that it "knows" where it is in the map.
 			for j in range(len(self.map[i])):	# I prefer to handle this automatically so there is no chance that the map index does not match
 				if(self.map[i][j]):				# the tile's internal coordinates.
 					self.map[i][j].x = j
 					self.map[i][j].y = i
-					
 					self.add_implied_barriers(j,i)	# If there are implied barriers (e.g. edge of map, adjacent None room, etc.) add a Wall.
-						
 					
 	def tile_at(self, x, y):
 		if x < 0 or y < 0:

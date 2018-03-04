@@ -8,6 +8,8 @@ class Enemy:
 	hp = 0
 	damage = 0
 	
+	loot = []
+	
 	agro = False	# Used to cause enemies to attack spontaneously.
 	
 	def __init__(self, direction = None, loot = []):
@@ -52,6 +54,20 @@ class Enemy:
 	def handle_input(self, verb, noun1, noun2, inventory):
 		return [False, None, inventory]
 
+	
+	def take_damage(self, amount):
+		self.has_changed = True
+		self.hp -= amount
+		if(self.hp <= 0):
+			self.hp = 0
+			defeat_text = "The %s is defeated." % self.name
+			if(len(self.loot) > 0):
+				defeat_text += " It dropped the following items: "
+				for item in self.loot:
+					defeat_text += "* " + str(item)
+			return defeat_text
+		else:
+			return "The %s took %d damage." % (self.name, amount)
 
 class Two(Enemy):
 	name = "Two"
@@ -65,14 +81,14 @@ class Three(Enemy):
 	description = "It looks angry."
 	hp = 30
 	damage = 10
-
+	
 
 class Four(Enemy):
 	name = "Four"
 	description = "A colony of bats swarms through the air."
 	hp = 100
 	damage = 4
-	
+
 	agro = True
 
 
@@ -83,18 +99,19 @@ class Five(Enemy):
 	damage = 15
 	loot = [items.Iron_Key("An old iron key lies on the ground near the remains of the Rock Monster.")]
 
-class Six(Enemy):
+
+#class Six(Enemy):
 	
-class Seven(Enemy):
+#class Seven(Enemy):
 
-class Eight(Enemy):
+#class Eight(Enemy):
 
-class Nine(Enemy):
+#class Nine(Enemy):
 
-class Ten(Enemy):
+#class Ten(Enemy):
 
-class Eleven(Enemy):
+#class Eleven(Enemy):
 
-class Twelve(Enemy):
+#class Twelve(Enemy):
 
 
