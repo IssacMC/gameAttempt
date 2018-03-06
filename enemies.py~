@@ -1,5 +1,6 @@
 import items
 
+import turnCount from game
 
 class Enemy:
 	name = "Do not create raw enemies!"
@@ -87,14 +88,14 @@ class Three(Enemy):
 
 class Four(Enemy):
 	name = "Four"
-	#if(TurnCount>40):
-	description = "A police detective. He seems to mean you harm"
-	hp = 1
-	damage = 1
-	#else:
-	#	desription = "A police detective. He says that he's on the side of the law, and means you no harm"
-	#	hp = 1
-	#	damage = 0
+	if(TurnCount>40):
+		description = "A police detective. He seems to mean you harm"
+		hp = 1
+		damage = 1
+	else:
+		desription = "A police detective. He says that he's on the side of the law, and means you no harm"
+		hp = 1
+		damage = 0
 
 class Five(Enemy):
 	name = "Five"
