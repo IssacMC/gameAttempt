@@ -109,7 +109,7 @@ class Darts(Weapon):
 	equip_description = "You grab the darts."
 	attack_descriptions = ["You throw the darts."]
 	
-	damage = 5
+	damage = 1
 	
 	
 class Gold(Item):

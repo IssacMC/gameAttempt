@@ -59,8 +59,7 @@ class Enemy:
 
 	
 	def take_damage(self, amount):
-		self.hp -= amount
-		if(self.hp <= 0):
+		if(self.weakness == amount):
 			self.hp = 0
 			defeat_text = "The %s is defeated." % self.name
 			if(len(self.loot) > 0):
@@ -72,7 +71,7 @@ class Enemy:
 			return "The %s took %d damage." % (self.name, amount)
 
 class Two(Enemy):
-	name = "Two"
+	name = ["Girl","Two"]
 	description = "A girl stands here. She seems to not want to kill you."
 	hp = 1
 	damage = 1
@@ -87,14 +86,14 @@ class Three(Enemy):
 
 class Four(Enemy):
 	name = "Four"
-	#if(TurnCount>40):
-	description = "A police detective. He seems to mean you harm"
+	description = "A police detective. He says he is with the law, and means you no harm"
 	hp = 1
-	damage = 1
-	#else:
-	#	desription = "A police detective. He says that he's on the side of the law, and means you no harm"
-	#	hp = 1
-	#	damage = 0
+	damage = 0
+
+class AggressiveFour(Enemy):
+	name = "Four"
+	description = "A police detective. He seems to mean you harm"
+
 
 class Five(Enemy):
 	name = "Five"

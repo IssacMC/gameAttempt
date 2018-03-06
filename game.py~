@@ -9,7 +9,7 @@ debug_mode = True	# Use this to toggle verbose mode on the text parser.
 
 game_name = "Try to Have Fun"
 
-turnCount = 0
+
 
 help_text = "To interact with this game world, you will use a basic text-based interface. \
 Try single-word commands like 'inventory' or 'west' (or their counterpart abbreviations, 'i' or 'w', respectively \
@@ -25,7 +25,6 @@ player = Player()
 world = World()
 	
 def play():	
-	global turnCount
 	print_welcome_text()
 	
 	print_wrap(world.tile_at(player.x,player.y).intro_text())
@@ -70,7 +69,8 @@ def play():
 		
 def handle_input(verb, noun1, noun2):
 	global debug_mode
-	global turnCount
+	global world
+	global player
 	
 	if(verb == 'help'):
 		if(not noun1):
@@ -103,7 +103,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_north(player.x, player.y)
 				if(move_status):
 					player.move_north()
-					turnCount = turnCount + 1
+					world.turnCount += 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:
@@ -113,7 +113,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_south(player.x, player.y)
 				if(move_status):
 					player.move_south()
-					turnCount = turnCount + 1
+					world.turnCount += 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:
@@ -123,7 +123,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_east(player.x, player.y)
 				if(move_status):
 					player.move_east()
-					turnCount = turnCount+1
+					world.turnCount += 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:
@@ -133,7 +133,7 @@ def handle_input(verb, noun1, noun2):
 				[move_status, move_description] = world.check_west(player.x, player.y)
 				if(move_status):
 					player.move_west()
-					turnCount = turnCount + 1
+					world.turnCount += 1
 					world.tile_at(player.x, player.y).random_spawn()		# Randomly spawn enemies if possible.
 					return [move_description, world.tile_at(player.x, player.y).intro_text()]
 				else:

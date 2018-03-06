@@ -5,6 +5,8 @@ import npcs
 
 from random import randint 	# Used to generate random integers.
 
+Count = 0
+
 Two = enemies.Two()			# I'm attempting a global enemy, may God help us all.
 Three = enemies.Three()
 Four = enemies.Four()
@@ -18,6 +20,7 @@ Eleven = enemies.Eleven()
 Twelve = enemies.Twelve()
 
 class MapTile:
+	global Count
 	description = "Do not create raw MapTiles! Create a subclass instead!"
 	barriers = []
 	enemies = []
@@ -143,23 +146,28 @@ class Home(MapTile):
 	description = "Home sweet home."
 
 class HomeZone(MapTile):
-	decription = "Your home is within sight"
+	enemies = [Five]
+	description = "Your home is within sight"
 		
 class ZoneTwo(MapTile):
-	description = "A girl seems to be standing there waiting for something"
-
-class School(MapTile):
 	global Two
 	enemies = [Two]
+	description = "A typical segment of street"
+
+class School(MapTile):
 	description = "You're at school. Kinda boring honestly."
 	
 class Tower(MapTile):
-	global Two
-	enemies = [Two]
 	description = "A high tower looms in your vision, would you like to enter?"
 
 class Police(MapTile):
+	global Four
+	global AggressiveFour
 	description = "A police station, probably with police in it."
+	if(Count<20):
+		enemies = [Four]
+	else:
+		enemies = [AggressiveFour]
 
 class Vault(MapTile):
 	description = "A bank, with a large vault."
@@ -197,7 +205,9 @@ class Hmm(MapTile):
 class InTower(MapTile):
 	description = "You are within the fancy tower"
 		
-class World:									# I choose to define the world as a class. This makes it more straightforward to import into the game.
+class World:	
+	turnCount = 0
+	global Count								# I choose to define the world as a class. This makes it more straightforward to import into the game.
 	map = [
 		[InSchool(),InSchool(),Street(),Street(),Shrine(),Shrine(),SchoolZone(),SchoolZone(),School()    ,School()],
 		[InSchool(),InSchool(),Street(),Street(),Street(),Street(),SchoolZone(),SchoolZone(),School()    ,School()],
@@ -362,6 +372,7 @@ class World:									# I choose to define the world as a class. This makes it mo
 				self.map[y][x].add_barrier(barriers.Wall('w'))	
 		
 	def update_rooms(self, player):
+		Count = self.turnCount
 		for row in self.map:
 			for room in row:
 				if(room):
