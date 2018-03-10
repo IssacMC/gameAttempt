@@ -32,7 +32,7 @@ class NPC:
 
 class OldMan(NPC):
 	name = "Old Man"
-	goods = [items.Darts(), items.Red_Potion(value = 50), items.Crusty_Bread(value = 5)]
+	goods = [items.Dagger(), items.Red_Potion(value = 50), items.Crusty_Bread(value = 5)]
 	quantities = [1, -1, 2]		# Set quantity to -1 if you want it to be infinite.
 	
 	description = "An old man in a red robe is standing in the middle of the room."
@@ -44,7 +44,7 @@ class OldMan(NPC):
 				if(self.quantities[self.goods.index(item)] > 0):
 					quantity = "quantity = %d" % self.quantities[self.goods.index(item)]
 				else:
-					quantity = "quantity = unlimied"
+					quantity = "quantity = unlimited"
 				print("* " + item.name.title() + " (" + str(item.value) + " gold, " + quantity + ")")
 		return ""
 		

@@ -40,42 +40,8 @@ class Item:
 		
 	def handle_input(self, verb, noun1, noun2, inventory):
 		return [False, None, inventory]
-		
-		
-class Iron_Key(Item):
-	name = "iron key"
-	
-	description = "An old iron key. It looks like it would open a massive door."
-	dropped_description = "An old iron key is lying on the ground."		
-		
-		
-class Consumable(Item):
-	consume_description = "You should define flavor text for consuming this item in its subclass."
 
-	healing_value = 0		# Define this appropriately in your subclass.
 		
-	def consume(self):
-		return [self.consume_description, self.healing_value]
-			
-
-class Crusty_Bread(Consumable):
-	name = "crusty bread"
-	healing_value = 10
-	
-	description = "Just a stale old piece of bread."
-	dropped_description = "A piece of crusty bread is lying on the ground."
-	consume_description = "You eat the crusty piece of bread."
-			
-class Red_Potion(Consumable):
-	name = "red potion"
-	healing_value = 75
-	
-	description = "A bottle of mysterious, glowing red potion. For some reason it looks healthy."
-	dropped_description = "A bottle of red potion is glowing on the ground."
-	consume_description = "You drink the glowing red potion."
-	
-	
-	
 
 class Weapon(Item):	
 	equip_description = "You should define flavor text for equipping this item in its subclass."
@@ -90,27 +56,44 @@ class Weapon(Item):
 		return [self.attack_descriptions[randint(0, len(self.attack_descriptions)-1)], self.damage]		# Return damage and a random attack description from your list.
 		
 
-
-class Phone(Item):
-	name = "phone"
-	
-	description = "A cellphone that records the events of the future, one of its more useful features is that it tells you when you're near death"
-	dropped_description = "Your cellphone lies on the ground. It's pretty important, you should pick it back up."
-	equip_description = "You pick up your cellphone."
-	
-	
-
-
 class Darts(Weapon):
 	name = "darts"
 	
 	description = "A couple of darts. They look suitable for piercing something"
-	dropped_description = "The darts lie on the ground. They're the only available weapon to you, so you should probably keep them."
+	dropped_description = "Some darts float around. They're the only available weapon to you, so you should probably keep them."
 	equip_description = "You grab the darts."
 	attack_descriptions = ["You throw the darts."]
 	
 	damage = 1
+
+class Rock(Weapon):
+	name = "rock"
 	
+	description = "A fist-sized rock, suitable for bludgeoning."
+	dropped_description = "A nicely sized rock lies on the ground."
+	equip_description = "You arm yourself with the rock."
+	attack_descriptions = ["You throw the rock at high speeds."]
+	
+	damage = 2
+
+class Mirror(Weapon):
+	name = "mirror"
+	
+	description = "A highly reflective mirror."
+	dropped_description = " "
+	equip_description = "You hold the mirror."
+	attack_descriptions = ["You hold the mirror in front of you in an effort to block attacks."]
+	damage = 3
+
+class Water(Weapon):
+	name = "water"
+
+	description = "A large bottle of water"
+	dropped_description = "A bottle of water lies on the ground."
+	equip_description = "You hold the bottle and unscrew the cap"
+	attack_descriptions = ["You throw the water"]
+	damage = 4
+
 	
 class Gold(Item):
 	value = 0		# Define this appropriately in your subclass.

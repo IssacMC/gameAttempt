@@ -5,8 +5,7 @@ import npcs
 
 from random import randint 	# Used to generate random integers.
 
-turnCount = 0
-
+Count = 0
 Two = enemies.Two()			# I'm attempting a global enemy, may God help us all.
 Three = enemies.Three()
 Four = enemies.Four()
@@ -20,7 +19,7 @@ Eleven = enemies.Eleven()
 Twelve = enemies.Twelve()
 
 class MapTile:
-	global turnCount
+	global Count
 	description = "Do not create raw MapTiles! Create a subclass instead!"
 	barriers = []
 	enemies = []
@@ -142,12 +141,13 @@ class MapTile:
 
 
 class Home(MapTile):
-	items = [items.Phone(), items.Darts()]
+	items = [items.Darts(),items.Rock()]
 	description = "Home sweet home."
 
 class HomeZone(MapTile):
-	enemies = [Five]
-	description = "Your home is within sight"
+	if(Count>10):
+		enemies = [Five]
+	description = "Your home is within sight."
 		
 class ZoneTwo(MapTile):
 	global Two
@@ -162,12 +162,9 @@ class Tower(MapTile):
 
 class Police(MapTile):
 	global Four
-	global AggressiveFour
+	enemies = [Four]
 	description = "A police station, probably with police in it."
-	if(turnCount<20):
-		enemies = [Four]
-	else:
-		enemies = [AggressiveFour]
+
 
 class Vault(MapTile):
 	description = "A bank, with a large vault."
@@ -181,43 +178,35 @@ class Refuge(MapTile):
 class Shrine(MapTile):
 	description = "A shrine that seems to have a cult dwelling within."
 
-class InSchool(MapTile):
-	description = "You're inside the school. It's quite boring."
-
-class InVault(MapTile):
-	description = "You've successfully entered the vault. There appears to be a dead man in here."
-	
-class InShrine(MapTile):
-	description = "You're within the shrine"
-
-class InRefuge(MapTile):
-	description = "You have entered the building."
-
 class Street(MapTile):
 	description = "A typical segment of street"
 
 class SchoolZone(MapTile):
-	description = "You're near the school."
+	description = "You near a building that appears to be a school."
 
 class Hmm(MapTile):
-	description = "Hmm"
+	description = "You got a bit unlucky here"
 
 class InTower(MapTile):
 	description = "You are within the fancy tower"
+
+class VictoryTile(MapTile):
+	description = "You have successfully cleared a path to the exit. Victory is yours!"
 		
 class World:	
-	turnCount = global turnCount								# I choose to define the world as a class. This makes it more straightforward to import into the game.
+	turnCount = 0
+	global Count								# I choose to define the world as a class. This makes it more straightforward to import into the game.
 	map = [
-		[InSchool(),InSchool(),Street(),Street(),Shrine(),Shrine(),SchoolZone(),SchoolZone(),School()    ,School()],
-		[InSchool(),InSchool(),Street(),Street(),Street(),Street(),SchoolZone(),SchoolZone(),School()    ,School()],
-		[InShrine(),InShrine(),Vault() ,Street(),Street(),Street(),SchoolZone(),SchoolZone(),SchoolZone(),SchoolZone()],
-		[InTower() ,InTower() ,Vault() ,Street(),Tower() ,Tower() ,SchoolZone(),SchoolZone(),SchoolZone(),SchoolZone()],
-		[InRefuge(),Hmm()     ,Street(),Street(),Tower() ,Tower() ,Street()    ,Street()    ,Street()    ,Street()],
-		[InVault() ,InVault() ,Street(),Street(),Street(),Street(),Street()    ,Street()    ,ZoneTwo()   ,ZoneTwo()],
-		[Street()   ,Street()  ,Street(),Street(),Street(),Street(),Street()    ,Street()    ,ZoneTwo()   ,ZoneTwo()],
-		[Park()    ,Park()    ,Park()  ,Street(),Street(),Police(),Street()    ,Street()    ,Street()    ,Street()],
-		[Park()    ,Park()    ,Park()  ,Street(),Street(),Police(),Street()    ,Street()    ,Street()    ,HomeZone()],
-		[Refuge()  ,Park()    ,Park()  ,Street(),Street(),Street(),Street()    ,Street()    ,HomeZone()  ,Home()]
+		[VictoryTile(),Street(),Street(),Shrine(),Shrine(),SchoolZone(),SchoolZone(),School()    ,School()],
+		[Street() ,Street(),Street(),Street(),Street(),Street(),SchoolZone(),SchoolZone(),School()    ,School()],
+		[Street() ,Street(),Vault() ,Street(),Street(),Street(),SchoolZone(),SchoolZone(),SchoolZone(),SchoolZone()],
+		[Street() ,Street() ,Vault() ,Street(),Tower() ,Tower() ,SchoolZone(),SchoolZone(),SchoolZone(),SchoolZone()],
+		[Street() ,Hmm()     ,Street(),Street(),Tower() ,Tower() ,Street()    ,Street()    ,Street()    ,Street()],
+		[Street() ,Street() ,Street(),Street(),Street(),Street(),Street()    ,Street()    ,ZoneTwo()   ,ZoneTwo()],
+		[Street() ,Street()  ,Street(),Street(),Street(),Street(),Street()    ,Street()    ,ZoneTwo()   ,ZoneTwo()],
+		[Park()   ,Park()    ,Park()  ,Street(),Street(),Police(),Street()    ,Street()    ,Street()    ,Street()],
+		[Park()   ,Park()    ,Park()  ,Street(),Street(),Police(),Street()    ,Street()    ,Street()    ,HomeZone()],
+		[Refuge() ,Park()    ,Park()  ,Street(),Street(),Street(),Street()    ,Street()    ,HomeZone()  ,Home()]
 	]
 	
 	def __init__(self):
@@ -371,8 +360,159 @@ class World:
 				self.map[y][x].add_barrier(barriers.Wall('w'))	
 		
 	def update_rooms(self, player):
+		Count = self.turnCount
 		for row in self.map:
 			for room in row:
 				if(room):
 					room.update(player)
 	
+
+	def tile_at(self, x, y):
+		if x < 0 or y < 0:
+			return None
+		try:
+			return self.map[y][x]
+		except IndexError:
+			return None
+			
+	def check_north(self, x, y):
+		for enemy in self.map[y][x].enemies:
+			if(enemy.direction == 'north'):
+				return [False, enemy.check_text()]		
+		for barrier in self.map[y][x].barriers:
+			if(barrier.direction == 'north' and not barrier.passable):
+				return [False, barrier.description()]				
+				
+		if y-1 < 0:
+			room = None
+		else:
+			try:
+				room = self.map[y-1][x]
+			except IndexError:
+				room = None
+		
+		if(room):
+			return [True, "You head to the north."]
+		else:
+			return [False, "There doesn't seem to be a path to the north."]
+			
+	def check_south(self, x, y):
+		for enemy in self.map[y][x].enemies:
+			if(enemy.direction == 'south'):
+				return [False, enemy.check_text()]		
+		for barrier in self.map[y][x].barriers:
+			if(barrier.direction == 'south' and not barrier.passable):
+				return [False, barrier.description()]	
+				
+		if y+1 < 0:
+			room = None
+		else:
+			try:
+				room = self.map[y+1][x]
+			except IndexError:
+				room = None
+		
+		if(room):
+			return [True, "You head to the south."]
+		else:
+			return [False, "There doesn't seem to be a path to the south."]
+
+	def check_west(self, x, y):
+		for enemy in self.map[y][x].enemies:
+			if(enemy.direction == 'west'):
+				return [False, enemy.check_text()]		
+		for barrier in self.map[y][x].barriers:
+			if(barrier.direction == 'west' and not barrier.passable):
+				return [False, barrier.description()]	
+	
+		if x-1 < 0:
+			room = None
+		else:
+			try:
+				room = self.map[y][x-1]
+			except IndexError:
+				room = None
+		
+		if(room):
+			return [True, "You head to the west."]
+		else:
+			return [False, "There doesn't seem to be a path to the west."]
+			
+	def check_east(self, x, y):
+		for enemy in self.map[y][x].enemies:
+			if(enemy.direction == 'east'):
+				return [False, enemy.check_text()]		
+		for barrier in self.map[y][x].barriers:
+			if(barrier.direction == 'east' and not barrier.passable):
+				return [False, barrier.description()]	
+				
+		if x+1 < 0:
+			room = None
+		else:
+			try:
+				room = self.map[y][x+1]
+			except IndexError:
+				room = None
+		
+		if(room):
+			return [True, "You head to the east."]
+		else:
+			return [False, "There doesn't seem to be a path to the east."]
+			
+	def add_implied_barriers(self, x, y):
+
+		[status, text] = self.check_north(x,y)
+		barrier_present = False
+		if(not status):
+			for enemy in self.map[y][x].enemies:
+				if enemy.direction == 'north':
+					barrier_present = True
+			for barrier in self.map[y][x].barriers:
+				if barrier.direction == 'north':
+					barrier_present = True
+			if(not barrier_present):
+				self.map[y][x].add_barrier(barriers.Wall('n'))	
+				
+		[status, text] = self.check_south(x,y)
+		barrier_present = False
+		if(not status):
+			for enemy in self.map[y][x].enemies:
+				if enemy.direction == 'south':
+					barrier_present = True
+			for barrier in self.map[y][x].barriers:
+				if barrier.direction == 'south':
+					barrier_present = True
+			if(not barrier_present):
+				self.map[y][x].add_barrier(barriers.Wall('s'))	
+			
+		[status, text] = self.check_east(x,y)
+		barrier_present = False
+		if(not status):
+			for enemy in self.map[y][x].enemies:
+				if enemy.direction == 'east':
+					barrier_present = True
+			for barrier in self.map[y][x].barriers:
+				if barrier.direction == 'east':
+					barrier_present = True
+			if(not barrier_present):
+				self.map[y][x].add_barrier(barriers.Wall('e'))	
+			
+		[status, text] = self.check_west(x,y)
+		barrier_present = False
+		if(not status):
+			for enemy in self.map[y][x].enemies:
+				if enemy.direction == 'west':
+					barrier_present = True
+			for barrier in self.map[y][x].barriers:
+				if barrier.direction == 'west':
+					barrier_present = True
+			if(not barrier_present):
+				self.map[y][x].add_barrier(barriers.Wall('w'))	
+		
+	def update_rooms(self, player):
+		Count = self.turnCount
+		for row in self.map:
+			for room in row:
+				if(room):
+					room.update(player)
+

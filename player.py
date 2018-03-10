@@ -8,8 +8,8 @@ class Player:
 		
 		self.gold = 5
 		
-		self.hp = 30
-		self.max_hp = 50
+		self.hp = 10
+		self.max_hp = 10
 		
 		self.x = 9
 		self.y = 9

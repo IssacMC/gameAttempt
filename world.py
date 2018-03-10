@@ -1,30 +1,26 @@
 import items
 import enemies
 import barriers
-import npcs
+
 
 from random import randint 	# Used to generate random integers.
-
-Count = 0
 
 Two = enemies.Two()			# I'm attempting a global enemy, may God help us all.
 Three = enemies.Three()
 Four = enemies.Four()
-Five = enemies.Five()
-Six = enemies.Six()
-Seven = enemies.Seven()
 Eight = enemies.Eight()
-Nine = enemies.Nine()
-Ten = enemies.Ten()
-Eleven = enemies.Eleven()
-Twelve = enemies.Twelve()
+
+Sorry = enemies.Sorry()
+
+Mirror = items.Mirror()
+Rock = items.Rock()
 
 class MapTile:
-	global Count
 	description = "Do not create raw MapTiles! Create a subclass instead!"
 	barriers = []
 	enemies = []
 	items = []
+
 	
 	def __init__(self, x=0, y=0, barriers = [], items = [], enemies = []):
 		self.x = x
@@ -35,7 +31,6 @@ class MapTile:
 			self.add_item(item)
 		for enemy in enemies:
 			self.add_enemy(enemy)
-
 	
 	def intro_text(self):
 		text = self.description
@@ -51,6 +46,7 @@ class MapTile:
 				if(barrier.direction not in directions_blocked):
 					if(barrier.verbose):
 						text += " " + barrier.description()
+		
 		for item in self.items:
 			text += " " + item.room_text()
 
@@ -69,6 +65,7 @@ class MapTile:
 				for enemy in self.enemies:
 					if(enemy.name.lower() == noun1):
 						return [True, enemy.check_text(), inventory]
+				
 			elif(verb == 'take'):
 				for index in range(len(self.items)):
 					if(self.items[index].name.lower() == noun1):
@@ -88,17 +85,7 @@ class MapTile:
 						inventory.pop(index)
 						return [True, drop_text, inventory]
 
-		for list in [self.barriers, self.items, self.enemies]:
-			for item in list:
-				[status, description, inventory] = item.handle_input(verb, noun1, noun2, inventory)
-				if(status):
-					return [status, description, inventory]
-					
-		for list in [self.barriers, self.items, self.enemies]:			# Added to give the player feedback if they have part of the name of an object correct.
-			for item in list:
-				if(item.name):
-					if(noun1 in item.name):
-						return [True, "Be more specific.", inventory]
+		
 			
 		return [False, "", inventory]
 		
@@ -119,6 +106,8 @@ class MapTile:
 			self.enemies = [enemy]		# Initialize the list if it is empty.
 		else:
 			self.enemies.append(enemy)	# Add to the list if it is not empty.
+			
+	
 			
 	def random_spawn(self):
 		pass						# Update this for your specific subclass if you want randomly spawning enemies.
@@ -141,93 +130,126 @@ class MapTile:
 					print(agro_text)
 
 
-class Home(MapTile):
-	items = [items.Phone(), items.Darts()]
-	description = "Home sweet home."
 
-class HomeZone(MapTile):
-	enemies = [Five]
-	description = "Your home is within sight"
+	
+	def __init__(self, x=0, y=0, barriers = [], items = [], enemies = []):	# Since this tile appears so much, I gave it its own __init__() function to add random flavor text to some of the tiles.
+		self.x = x
+		self.y = y
+		for barrier in barriers:
+			self.add_barrier(barrier)
+		for item in items:
+			self.add_item(item)
+		for enemy in enemies:
+			self.add_enemy(enemy)
+
+	
+	def intro_text(self):	# Since this tile appears so much, I gave it its own intro_text function to make its text more descriptive.
+		text = self.description
+			
+		directions_clear = ['north', 'south', 'east', 'west']
+		for barrier in self.barriers:
+			try:
+				directions_clear.pop(directions_clear.index(barrier.direction))		# Attempt to remove the barrier's direction from the list of clear directions.
+			except:
+				pass		# If the barrier direction is not in the list of clear directions already, then we ignore it.
+		#for enemy in self.contents['enemies']:
+		#	text += " " + enemy.description()
 		
-class ZoneTwo(MapTile):
-	global Two
-	enemies = [Two]
-	description = "A typical segment of street"
-
-class School(MapTile):
-	description = "You're at school. Kinda boring honestly."
+		if(len(directions_clear) == 1):
+			text += " There is a clear pathway leading to the %s." % directions_clear[0]
+		elif(len(directions_clear) == 2):
+			text += " There are clear pathways leading to the %s and %s." % (directions_clear[0], directions_clear[1])
+		elif(len(directions_clear) == 3):
+			text += " There are clear pathways leading to the %s, %s, and %s." % (directions_clear[0], directions_clear[1], directions_clear[2])
+		elif(len(directions_clear) == 4):
+			text += " It appears that your path is clear in all directions." 
+		
+		directions_blocked = []
+		
+		for enemy in self.enemies:
+			if (enemy.direction):
+				if(enemy.direction not in directions_blocked):
+					directions_blocked.append(enemy.direction)
+			text += " " + enemy.check_text()
+		for barrier in self.barriers:
+			if (barrier.direction):
+				if(barrier.direction not in directions_blocked):
+					if(barrier.verbose):
+						text += " " + barrier.description()
+		
+		for item in self.items:
+			text += " " + item.room_text()
+		return text
 	
-class Tower(MapTile):
-	description = "A high tower looms in your vision, would you like to enter?"
-
-class Police(MapTile):
-	global Four
-	global AggressiveFour
-	description = "A police station, probably with police in it."
-	if(Count<20):
-		enemies = [Four]
-	else:
-		enemies = [AggressiveFour]
-
-class Vault(MapTile):
-	description = "A bank, with a large vault."
-
-class Park(MapTile):
-	description = "A spacious park."
-
-class Refuge(MapTile):
-	description = "A building that seems sturdy."
-
-class Shrine(MapTile):
-	description = "A shrine that seems to have a cult dwelling within."
-
-class InSchool(MapTile):
-	description = "You're inside the school. It's quite boring."
-
-class InVault(MapTile):
-	description = "You've successfully entered the vault. There appears to be a dead man in here."
-	
-class InShrine(MapTile):
-	description = "You're within the shrine"
-
-class InRefuge(MapTile):
-	description = "You have entered the building."
+		
+class StartingTile(MapTile):
+	items = [items.Darts()]
+	description = "You find yourself surrounded by nothing."
 
 class Street(MapTile):
-	description = "A typical segment of street"
+	description = "There is nothing here. Literally nothing. Its an empty void. You don't even know how you're traversing it honestly"
 
-class SchoolZone(MapTile):
-	description = "You're near the school."
+class ZoneTwo(MapTile):
+	global Two
+	global Mirror
+	enemies = [Two]
+	description = "A... normal setting? It seems to be a street corner."
+	items = [Mirror]
+class ZoneThree(MapTile):
+	global Three
+	global Rock
+	enemies = [Three]
+	description = "A bright light fills your vision. There appears to be a massive bonfire."
+	items = [Rock]
+class ZoneFour(MapTile):
+	global Water
+	global Four
+	enemies = [Four]
+	description = "A room filled with massive pillars of marble. It looks pretty cool, honestly."
+
+class Field(MapTile):
+	description = "An open field. Its quite peaceful here."
+
+class Refuge(MapTile):
+	description = "A plain building, seems like it would be a nice place to rest"
+	items = [items.Water()]	
+
+class Final(MapTile):
+	global Eight
+	description = "There appears to be a room further beyond."
+	enemies = [Eight]
 
 class Hmm(MapTile):
-	description = "Hmm"
+	global Sorry
+	description = "You've made a mistake."
+	enemies = [Sorry]
 
-class InTower(MapTile):
-	description = "You are within the fancy tower"
-		
+class VictoryTile(MapTile):
+	description = "You've reached the end. Victory is yours!"
+
 class World:	
-	turnCount = 0
-	global Count								# I choose to define the world as a class. This makes it more straightforward to import into the game.
 	map = [
-		[InSchool(),InSchool(),Street(),Street(),Shrine(),Shrine(),SchoolZone(),SchoolZone(),School()    ,School()],
-		[InSchool(),InSchool(),Street(),Street(),Street(),Street(),SchoolZone(),SchoolZone(),School()    ,School()],
-		[InShrine(),InShrine(),Vault() ,Street(),Street(),Street(),SchoolZone(),SchoolZone(),SchoolZone(),SchoolZone()],
-		[InTower() ,InTower() ,Vault() ,Street(),Tower() ,Tower() ,SchoolZone(),SchoolZone(),SchoolZone(),SchoolZone()],
-		[InRefuge(),Hmm()     ,Street(),Street(),Tower() ,Tower() ,Street()    ,Street()    ,Street()    ,Street()],
-		[InVault() ,InVault() ,Street(),Street(),Street(),Street(),Street()    ,Street()    ,ZoneTwo()   ,ZoneTwo()],
-		[Street()   ,Street()  ,Street(),Street(),Street(),Street(),Street()    ,Street()    ,ZoneTwo()   ,ZoneTwo()],
-		[Park()    ,Park()    ,Park()  ,Street(),Street(),Police(),Street()    ,Street()    ,Street()    ,Street()],
-		[Park()    ,Park()    ,Park()  ,Street(),Street(),Police(),Street()    ,Street()    ,Street()    ,HomeZone()],
-		[Refuge()  ,Park()    ,Park()  ,Street(),Street(),Street(),Street()    ,Street()    ,HomeZone()  ,Home()]
+		[VictoryTile(),Hmm()    ,ZoneFour(),ZoneFour(),Street()  ,Street()    ,Street() ,Street(),Street() ,Hmm()],
+		[Final()      ,Final()  ,ZoneFour(),ZoneFour(),Street()  ,Street()    ,Street() ,Street(),Street() ,Street()],
+		[Street()     ,Street() ,Street()  ,ZoneFour(),Street()  ,Street()    ,Street() ,Street(),Street() ,Street()],
+		[ZoneFour()     ,ZoneFour() ,Street()  ,ZoneFour(),ZoneThree(),ZoneThree(),Street() ,Street(),Street() ,Street()],
+		[Street()     ,Hmm()    ,Street()  ,ZoneFour(),ZoneThree(),ZoneThree(),Street() ,Street(),Street() ,Street()],
+		[Street()     ,Street() ,Street()  ,ZoneFour(),ZoneThree(),ZoneThree(),Street() ,Street(),ZoneTwo(),ZoneTwo()],
+		[Street()     ,Street() ,Street()  ,ZoneFour(),Street()  ,Street()    ,Street() ,Street(),ZoneTwo(),ZoneTwo()],
+		[Field()      ,Field()  ,Field()   ,Street()  ,Street()  ,Street()    ,Street() ,Street(),Street() ,Street()],
+		[Field()      ,Field()  ,Field()   ,Street()  ,Street()  ,Street()    ,Street() ,Street(),Street() ,Street()],
+		[Refuge()     ,Field()  ,Field()   ,Street()  ,Hmm()     ,Street()    ,Street() ,Street(),Street() ,StartingTile()]
 	]
-	
+
 	def __init__(self):
 		for i in range(len(self.map)):			# We want to set the x, y coordinates for each tile so that it "knows" where it is in the map.
 			for j in range(len(self.map[i])):	# I prefer to handle this automatically so there is no chance that the map index does not match
 				if(self.map[i][j]):				# the tile's internal coordinates.
 					self.map[i][j].x = j
 					self.map[i][j].y = i
+					
 					self.add_implied_barriers(j,i)	# If there are implied barriers (e.g. edge of map, adjacent None room, etc.) add a Wall.
+						
 					
 	def tile_at(self, x, y):
 		if x < 0 or y < 0:
@@ -372,7 +394,6 @@ class World:
 				self.map[y][x].add_barrier(barriers.Wall('w'))	
 		
 	def update_rooms(self, player):
-		Count = self.turnCount
 		for row in self.map:
 			for room in row:
 				if(room):
